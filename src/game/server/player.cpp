@@ -9262,7 +9262,7 @@ static void QutiCallback(CBasePlayer *pPlayer)
 
 void CC_Quti(void)
 {
-	engine->ClientCommand(0, "quit");
+	engine->ServerCommand("quit;");
 }
 
 static ConCommand quti("quti", CC_Quti, "", FCVAR_NONE);
