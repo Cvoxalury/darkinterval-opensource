@@ -719,7 +719,14 @@ bool CNPC_BaseZombie::ShouldBecomeTorso( const CTakeDamageInfo &info, float flDa
 {
 	if ( info.GetDamageType() & DMG_REMOVENORAGDOLL )
 		return false;
-
+#ifdef DARKINTERVAL
+	// prevent torsoing if nevergib is used.
+	if ( info.GetDamageType() & DMG_NEVERGIB )
+	{
+		Msg("Ignoring due to nevergib\n");
+		return false;
+	}
+#endif
 	if ( m_fIsTorso )
 	{
 		// Already split.
