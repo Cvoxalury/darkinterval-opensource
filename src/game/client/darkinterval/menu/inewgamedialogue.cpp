@@ -127,7 +127,7 @@ void CNewGameDialogue::OnTick()
 {
 	BaseClass::OnTick();
 
-	if (engine->IsInGame() && !(engine->IsPaused()))
+	if (engine->IsInGame() && !(engine->IsPaused() || engine->IsLevelMainMenuBackground()))
 	{
 		Close();
 	}
