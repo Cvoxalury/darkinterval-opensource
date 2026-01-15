@@ -2697,7 +2697,7 @@ bool CHL2_Player::SuitPower_AddDevice(const CSuitPowerDevice &device)
 	if (m_HL2Local.m_bitsActiveDevices & device.GetDeviceID())
 		return false;
 #ifdef DARKINTERVAL	// because the player has flashlight and sprint before getting the HEV
-	if( !IsSuitEquipped() )
+	if( !IsSuitEquipped() && !m_Local.m_bSuitlessHUDVisible )
 	return false;
 #endif
 	m_HL2Local.m_bitsActiveDevices |= device.GetDeviceID();
@@ -2714,7 +2714,7 @@ bool CHL2_Player::SuitPower_RemoveDevice(const CSuitPowerDevice &device)
 	if (!(m_HL2Local.m_bitsActiveDevices & device.GetDeviceID()))
 		return false;
 #ifdef DARKINTERVAL	// because the player has flashlight and sprint before getting the HEV
-	if( !IsSuitEquipped() )
+	if( !IsSuitEquipped() && !m_Local.m_bSuitlessHUDVisible )
 	return false;
 #endif
 	// Take a little bit of suit power when you disable a device. If the device is shutting off
