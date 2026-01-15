@@ -6273,11 +6273,11 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveNamedItem( "weapon_pistol" );
 		GiveNamedItem( "weapon_shotgun" );
 		GiveNamedItem( "weapon_physcannon" );
+		GiveNamedItem( "weapon_357" );
 #ifndef DARKINTERVAL
 		GiveNamedItem("weapon_ar2");
 		GiveNamedItem( "weapon_bugbait" );
 		GiveNamedItem( "weapon_rpg" );
-		GiveNamedItem( "weapon_357" );
 #endif
 		GiveNamedItem( "weapon_crossbow" );
 #ifdef DARKINTERVAL
