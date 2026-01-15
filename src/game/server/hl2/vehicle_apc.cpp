@@ -2541,6 +2541,9 @@ void CPropAPC::FireDying( )
 	{
 		CreateCorpse();
 	}
+#else
+	// one important thing that it did was set the life state to dead so the APC driver gets removed	
+	m_lifeState = LIFE_DEAD;
 #endif // DARKINTERVAL
 }
 #ifdef DARKINTERVAL
