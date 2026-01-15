@@ -31,7 +31,12 @@ public:
 
 	CFogController();
 	~CFogController();
-
+#ifdef DARKINTERVAL // fog controllers are often placed near the player start. This may cause them to get brought to previous level if backtracking
+	int		ObjectCaps(void)
+	{
+		return BaseClass::ObjectCaps() | FCAP_DONT_TRANSITION_EVER;
+	}
+#endif
 	// Parse data from a map file
 	virtual void Activate();
 	virtual int UpdateTransmitState();

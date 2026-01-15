@@ -100,7 +100,6 @@ CFogController::CFogController()
 	m_fog.maxdensity = 1.0f;
 }
 
-
 CFogController::~CFogController()
 {
 }
@@ -189,7 +188,6 @@ void CFogController::InputSetColor(inputdata_t &inputdata)
 	m_fog.colorPrimary = inputdata.value.Color32();
 }
 
-
 //------------------------------------------------------------------------------
 // Purpose: Input handler for setting the secondary fog color.
 //------------------------------------------------------------------------------
@@ -203,7 +201,6 @@ void CFogController::InputSetFarZ(inputdata_t &inputdata)
 {
 	m_fog.farz = inputdata.value.Int();
 }
-
 
 //------------------------------------------------------------------------------
 // Purpose: Sets the angles to use for the secondary fog direction.
@@ -222,7 +219,6 @@ void CFogController::InputSetAngles( inputdata_t &inputdata )
 	AngleVectors( GetAbsAngles(), &m_fog.dirPrimary.GetForModify() );
 	m_fog.dirPrimary.GetForModify() *= -1.0f;
 }
-
 
 //-----------------------------------------------------------------------------
 // Purpose: Draw any debug text overlays
@@ -340,7 +336,6 @@ void CFogController::SetLerpValues( void )
 	m_fog.lerptime = CURTIME;
 }
 
-
 //-----------------------------------------------------------------------------
 // Purpose: Clear out the fog controller.
 //-----------------------------------------------------------------------------
@@ -388,4 +383,3 @@ void CFogSystem::LevelInitPostEntity( void )
 		}
 	}
 }
-
