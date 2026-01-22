@@ -9,7 +9,7 @@
 #include "choreoscene.h"
 #include "choreoevent.h"
 
-extern IsoundemittersystemBase *soundemitterbase;
+extern ISoundEmitterSystemBase *soundemitterbase;
 CChoreoScene *BlockingLoadScene( const char *filename );
 
 CSceneCache::CSceneCache()

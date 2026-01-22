@@ -155,7 +155,7 @@ IEngineTrace *enginetrace = NULL;
 IGameEventManager2 *gameeventmanager = NULL;
 IDataCache *datacache = NULL;
 IVDebugOverlay * debugoverlay = NULL;
-IsoundemittersystemBase *soundemitterbase = NULL;
+ISoundEmitterSystemBase *soundemitterbase = NULL;
 IServerPluginHelpers *serverpluginhelpers = NULL;
 IServerEngineTools *serverenginetools = NULL;
 ISceneFileCache *scenefilecache = NULL;
@@ -620,7 +620,7 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 		return false;
 	if ( (datacache = (IDataCache*)appSystemFactory(DATACACHE_INTERFACE_VERSION, NULL )) == NULL )
 		return false;
-	if ( (soundemitterbase = (IsoundemittersystemBase *)appSystemFactory(SOUNDEMITTERSYSTEM_INTERFACE_VERSION, NULL)) == NULL )
+	if ( (soundemitterbase = (ISoundEmitterSystemBase *)appSystemFactory(SOUNDEMITTERSYSTEM_INTERFACE_VERSION, NULL)) == NULL )
 		return false;
 
 //#ifndef _XBOX

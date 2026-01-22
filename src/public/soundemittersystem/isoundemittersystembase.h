@@ -199,7 +199,7 @@ private:
 //-----------------------------------------------------------------------------
 // Purpose: Base class for sound emitter system handling (can be used by tools)
 //-----------------------------------------------------------------------------
-abstract_class IsoundemittersystemBase : public IAppSystem
+abstract_class ISoundEmitterSystemBase : public IAppSystem
 {
 public:
 	// Init, shutdown called after we know what mod is running

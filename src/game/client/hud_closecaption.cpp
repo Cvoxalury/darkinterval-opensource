@@ -1797,7 +1797,7 @@ ConVar cc_lang("cc_lang", "", FCVAR_ARCHIVE, "Current close caption language (em
 
 #define CC_INSET		12
 
-extern IsoundemittersystemBase *soundemitterbase;
+extern ISoundEmitterSystemBase *soundemitterbase;
 
 // Marked as FCVAR_USERINFO so that the server can cull CC messages before networking them down to us!!!
 ConVar closecaption( "closecaption", "1", FCVAR_ARCHIVE | FCVAR_ARCHIVE_XBOX | FCVAR_USERINFO, "Enable close captioning." );

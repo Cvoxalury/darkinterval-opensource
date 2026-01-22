@@ -50,7 +50,7 @@
 #ifdef DARKINTERVAL // experiment for controlling NPCs gendered lines during runtime
 extern ConVar gender_override;
 #endif
-extern IsoundemittersystemBase *soundemitterbase;
+extern ISoundEmitterSystemBase *soundemitterbase;
 extern ISceneFileCache *scenefilecache;
 
 class CSceneEntity;

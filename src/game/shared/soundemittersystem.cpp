@@ -40,7 +40,7 @@ static ConVar sv_snd_filter( "sv_snd_filter", "", FCVAR_REPLICATED, "Filters out
 #ifdef DARKINTERVAL // a test convar; used to test flexibility and overriding the gender system
 ConVar gender_override("gender_override", "0", 0, "0 = no override, 1 = make all male, 2 = make all female");
 #endif
-extern IsoundemittersystemBase *soundemitterbase;
+extern ISoundEmitterSystemBase *soundemitterbase;
 static ConVar *g_pClosecaption = NULL;
 
 static bool g_bPermitDirectSoundPrecache = false;

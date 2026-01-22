@@ -10,7 +10,7 @@
 #include "eventlist.h"
 #include "scriptevent.h"
 
-extern IsoundemittersystemBase *soundemitterbase;
+extern ISoundEmitterSystemBase *soundemitterbase;
 
 CStudioHdr *ModelSoundsCache_LoadModel( char const *filename );
 void ModelSoundsCache_PrecacheScriptSound( const char *soundname );
@@ -31,7 +31,7 @@ void VerifySequenceIndex( CStudioHdr *pstudiohdr );
 #define CL_EVENT_MFOOTSTEP_RIGHT	6007
 
 
-extern IsoundemittersystemBase *soundemitterbase;
+extern ISoundEmitterSystemBase *soundemitterbase;
 
 CModelSoundsCache::CModelSoundsCache()
 {

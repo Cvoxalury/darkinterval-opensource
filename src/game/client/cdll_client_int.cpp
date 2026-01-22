@@ -155,7 +155,7 @@ ISharedGameRules *sharedgamerules = NULL;
 IEngineTrace *enginetrace = NULL;
 IGameUIFuncs *gameuifuncs = NULL;
 IGameEventManager2 *gameeventmanager = NULL;
-IsoundemittersystemBase *soundemitterbase = NULL;
+ISoundEmitterSystemBase *soundemitterbase = NULL;
 IInputSystem *inputsystem = NULL;
 ISceneFileCache *scenefilecache = NULL;
 #ifndef DARKINTERVAL
@@ -829,7 +829,7 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 		return false;
 	if ( (gameeventmanager = (IGameEventManager2 *)appSystemFactory(INTERFACEVERSION_GAMEEVENTSMANAGER2,NULL)) == NULL )
 		return false;
-	if ( (soundemitterbase = (IsoundemittersystemBase *)appSystemFactory(SOUNDEMITTERSYSTEM_INTERFACE_VERSION, NULL)) == NULL )
+	if ( (soundemitterbase = (ISoundEmitterSystemBase *)appSystemFactory(SOUNDEMITTERSYSTEM_INTERFACE_VERSION, NULL)) == NULL )
 		return false;
 	if ( (inputsystem = (IInputSystem *)appSystemFactory(INPUTSYSTEM_INTERFACE_VERSION, NULL)) == NULL )
 		return false;
