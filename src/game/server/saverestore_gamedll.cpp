@@ -111,7 +111,11 @@ bool ParseKeyvalue( void *pObject, typedescription_t *pFields, int iNumFields, c
 			case FIELD_MODELINDEX:
 			case FIELD_MATERIALINDEX:
 			case FIELD_EDICT:
+#ifdef DARKINTERVAL
+				Warning( "Unsupported type for save/restore value \"%s\" found in an entity!\n", szKeyName );
+#else
 				Warning( "Bad field in entity!!\n" );
+#endif
 				Assert(0);
 				break;
 			}
