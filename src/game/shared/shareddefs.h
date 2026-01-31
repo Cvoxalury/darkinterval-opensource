@@ -347,8 +347,9 @@ enum
 	ENTITY_DISSOLVE_CORE,
 #ifdef DARKINTERVAL
 	ENTITY_DISSOLVE_BURN,
+	ENTITY_DISSOLVE_ASH_ONLY, // fall apart into ashes without burning
 	// NOTE: Be sure to up the bits if you make more dissolve types
-	ENTITY_DISSOLVE_BITS = 4
+	ENTITY_DISSOLVE_BITS = 5
 #else
 	// NOTE: Be sure to up the bits if you make more dissolve types
 	ENTITY_DISSOLVE_BITS = 3

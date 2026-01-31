@@ -6,7 +6,6 @@
 //=============================================================================//
 
 #include "cbase.h"
-
 #include "iviewrender.h"
 #include "view.h"
 #include "studio.h"
@@ -23,22 +22,21 @@
 #include "c_entitydissolve.h"
 #include "movevars_shared.h"
 #include "clienteffectprecachesystem.h"
-
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 #ifdef DARKINTERVAL
-#define sparkmat "custom_uni/dissolve_fire_spark"
-#define muzzlemat "custom_uni/dissolve_fire_glow"
-#define ashmat "custom_uni/dissolve_fire_spark"
+#define embers_mat "custom_uni/dissolve_fire_spark" // small ember-like particles
+#define fireglow_mat "custom_uni/dissolve_fire_glow" // big fire particles for DISSOLVE_BURN. They don't actually show now!!! The effect has been replaced with actual flames.
+#define ashes_mat "effects/fleck_cement1" /*"custom_uni/dissolve_fire_spark"*/ // dark flecks of ash floating away (SEPARATE from flecks falling on the ground)
 #endif
 CLIENTEFFECT_REGISTER_BEGIN( PrecacheEffectBuild )
 CLIENTEFFECT_MATERIAL( "effects/tesla_glow_noz" )
 CLIENTEFFECT_MATERIAL( "effects/spark" )
 CLIENTEFFECT_MATERIAL( "effects/combinemuzzle2" )
 #ifdef DARKINTERVAL
-CLIENTEFFECT_MATERIAL( sparkmat )
-CLIENTEFFECT_MATERIAL( muzzlemat )
-CLIENTEFFECT_MATERIAL( ashmat )
+CLIENTEFFECT_MATERIAL( embers_mat )
+CLIENTEFFECT_MATERIAL( fireglow_mat )
+CLIENTEFFECT_MATERIAL( ashes_mat )
 #endif
 CLIENTEFFECT_REGISTER_END()
 
@@ -518,10 +516,11 @@ float C_EntityDissolve::GetModelFadeOutPercentage( void )
 //-----------------------------------------------------------------------------
 void C_EntityDissolve::ClientThink( void )
 {
-	C_BaseEntity *pEnt = GetMoveParent();
-	if ( !pEnt )
-		return;
-
+#ifdef DARKINTERVAL // unused
+//	C_BaseEntity *pEnt = GetMoveParent();
+//	if ( !pEnt )
+//		return;
+#endif
 	bool bIsRagdoll;
 
 	C_BaseAnimating *pAnimating = GetMoveParent() ? GetMoveParent()->GetBaseAnimating() : NULL;
@@ -532,16 +531,16 @@ void C_EntityDissolve::ClientThink( void )
 	
 	// NOTE: IsRagdoll means *client-side* ragdoll. We shouldn't be trying to fight
 	// the server ragdoll (or any server physics) on the client
-	if (( !m_pController ) && ( m_nDissolveType == ENTITY_DISSOLVE_NORMAL ) && bIsRagdoll )
+	if ( ( !m_pController ) && ( m_nDissolveType == ENTITY_DISSOLVE_NORMAL ) && bIsRagdoll )
 	{
-		IPhysicsObject *ppList[VPHYSICS_MAX_OBJECT_LIST_COUNT];
-		int nCount = pEnt->VPhysicsGetObjectList( ppList, ARRAYSIZE(ppList) );
+		IPhysicsObject *ppList[ VPHYSICS_MAX_OBJECT_LIST_COUNT ];
+		int nCount = pAnimating->VPhysicsGetObjectList(ppList, ARRAYSIZE(ppList));
 		if ( nCount > 0 )
 		{
-			m_pController = physenv->CreateMotionController( this );
+			m_pController = physenv->CreateMotionController(this);
 			for ( int i = 0; i < nCount; ++i )
 			{
-				m_pController->AttachObject( ppList[i], true );
+				m_pController->AttachObject(ppList[ i ], true);
 			}
 		}
 	}
@@ -554,15 +553,18 @@ void C_EntityDissolve::ClientThink( void )
 	}
 #endif
 	color32 color;
-
+#ifdef DARKINTERVAL
 	color.r = ( 1.0f - GetFadeInPercentage() ) * m_vEffectColor.x;
 	color.g = ( 1.0f - GetFadeInPercentage() ) * m_vEffectColor.y;
 	color.b = ( 1.0f - GetFadeInPercentage() ) * m_vEffectColor.z;
+#else
+	color.r = color.g = color.b = ( 1.0f - GetFadeInPercentage() ) * 255.0f;
+#endif
 	color.a = GetModelFadeOutPercentage() * 255.0f;
 
 	// Setup the entity fade
-	pEnt->SetRenderMode( kRenderTransColor );
-	pEnt->SetRenderColor( color.r, color.g, color.b, color.a );
+	pAnimating->SetRenderMode( kRenderTransColor );
+	pAnimating->SetRenderColor( color.r, color.g, color.b, color.a );
 
 	if ( GetModelFadeOutPercentage() <= 0.2f )
 	{
@@ -594,7 +596,7 @@ void C_EntityDissolve::ClientThink( void )
 		{
 			Release();
 
-			C_ClientRagdoll *pRagdoll = dynamic_cast <C_ClientRagdoll *> ( pEnt );
+			C_ClientRagdoll *pRagdoll = dynamic_cast <C_ClientRagdoll *> ( pAnimating );
 
 			if ( pRagdoll )
 			{
@@ -618,7 +620,7 @@ ConVar entity_dissolve_burn_dietime("entity_dissolve_burn_dietime", "1.0f");
 ConVar entity_dissolve_burn_lifetime("entity_dissolve_burn_lifetime", "0.0f");
 ConVar entity_dissolve_burn_scale("entity_dissolve_burn_scale", "1.0f");
 #endif
-int C_EntityDissolve::DrawModel( int flags )
+int C_EntityDissolve::DrawModel(int flags)
 {
 	// See if we should draw
 	if ( gpGlobals->frametime == 0 || m_bReadyToDraw == false )
@@ -628,21 +630,21 @@ int C_EntityDissolve::DrawModel( int flags )
 	if ( pAnimating == NULL )
 		return 0;
 
-	matrix3x4_t	*hitboxbones[MAXSTUDIOBONES];
-	if ( pAnimating->HitboxToWorldTransforms( hitboxbones ) == false )
+	matrix3x4_t	*hitboxbones[ MAXSTUDIOBONES ];
+	if ( pAnimating->HitboxToWorldTransforms(hitboxbones) == false )
 		return 0;
 
-	studiohdr_t *pStudioHdr = modelinfo->GetStudiomodel( pAnimating->GetModel() );
+	studiohdr_t *pStudioHdr = modelinfo->GetStudiomodel(pAnimating->GetModel());
 	if ( pStudioHdr == NULL )
 		return false;
 
-	mstudiohitboxset_t *set = pStudioHdr->pHitboxSet( pAnimating->GetHitboxSet() );
+	mstudiohitboxset_t *set = pStudioHdr->pHitboxSet(pAnimating->GetHitboxSet());
 	if ( set == NULL )
 		return false;
-	
+
 	// Make sure the emitter is setup properly
 	SetupEmitter();
-	
+
 	// Get fade percentages for the effect
 	float fadeInPerc = GetFadeInPercentage();
 	float fadeOutPerc = GetFadeOutPercentage();
@@ -652,58 +654,53 @@ int C_EntityDissolve::DrawModel( int flags )
 	Vector vecSkew = vec3_origin;
 
 	// Do extra effects under certain circumstances
-	if ( ( fadePerc < 0.99f ) && ( (m_nDissolveType == ENTITY_DISSOLVE_ELECTRICAL) || (m_nDissolveType == ENTITY_DISSOLVE_ELECTRICAL_LIGHT) ) )
+	if ( ( fadePerc < 0.99f ) && ( ( m_nDissolveType == ENTITY_DISSOLVE_ELECTRICAL ) || ( m_nDissolveType == ENTITY_DISSOLVE_ELECTRICAL_LIGHT ) ) )
 	{
-		DoSparks( set, hitboxbones );
+		DoSparks(set, hitboxbones);
 	}
 
 	// Skew the particles in front or in back of their targets
 	vecSkew = CurrentViewForward() * ( 8.0f - ( ( 1.0f - fadePerc ) * 32.0f ) );
 
 	float spriteScale = ( ( CURTIME - m_flStartTime ) / m_flFadeOutLength );
-	spriteScale = clamp( spriteScale, 0.75f, 1.0f );
+	spriteScale = clamp(spriteScale, 0.75f, 1.0f);
 
 	// Cache off this material reference
 	if ( g_Material_Spark == NULL )
 	{
-		g_Material_Spark = ParticleMgr()->GetPMaterial( "effects/spark" );
+		g_Material_Spark = ParticleMgr()->GetPMaterial("effects/spark");
 	}
 
 	if ( g_Material_AR2Glow == NULL )
 	{
-#ifdef DARKINTERVAL
-		if (m_nDissolveType == ENTITY_DISSOLVE_BURN)
-			g_Material_AR2Glow = ParticleMgr()->GetPMaterial(muzzlemat);
-		else
-#endif
-			g_Material_AR2Glow = ParticleMgr()->GetPMaterial( "effects/combinemuzzle2" );
+		g_Material_AR2Glow = ParticleMgr()->GetPMaterial("effects/combinemuzzle2");
 	}
 
 	SimpleParticle *sParticle;
-	
+
 	for ( int i = 0; i < set->numhitboxes; ++i )
 	{
 #ifdef DARKINTERVAL
-		if (m_nDissolveType == ENTITY_DISSOLVE_BURN)
+		if ( m_nDissolveType == ENTITY_DISSOLVE_BURN || m_nDissolveType == ENTITY_DISSOLVE_ASH_ONLY )
 		{
-			if (i % 2 || i % 3) // burn effects emit way too many particles on characters. 
+			if ( i % 2 || i % 3 ) // burn effects emit way too many particles on characters. 
 				continue;
 		}
 #endif
 		Vector vecAbsOrigin, xvec, yvec;
 		mstudiobbox_t *pBox = set->pHitbox(i);
-		ComputeRenderInfo( pBox, *hitboxbones[pBox->bone], &vecAbsOrigin, &xvec, &yvec );
+		ComputeRenderInfo(pBox, *hitboxbones[ pBox->bone ], &vecAbsOrigin, &xvec, &yvec);
 
 		Vector offset;
 		Vector	xDir, yDir;
 
 		xDir = xvec;
-		float xScale = VectorNormalize( xDir ) * 0.75f;
+		float xScale = VectorNormalize(xDir) * 0.75f;
 
 		yDir = yvec;
-		float yScale = VectorNormalize( yDir ) * 0.75f;
+		float yScale = VectorNormalize(yDir) * 0.75f;
 
-		int numParticles = clamp( 3.0f * fadePerc, 0.f, 3.f );
+		int numParticles = clamp(3.0f * fadePerc, 0.f, 3.f);
 
 		int iTempParts = 2;
 
@@ -716,109 +713,133 @@ int C_EntityDissolve::DrawModel( int flags )
 			}
 		}
 #ifdef DARKINTERVAL
-		else if (m_nDissolveType == ENTITY_DISSOLVE_BURN)
+		else if ( m_nDissolveType == ENTITY_DISSOLVE_BURN )
 		{
 			numParticles = entity_dissolve_burn_numparticles.GetInt();
 			iTempParts = entity_dissolve_burn_numparts.GetInt();
-			spriteScale = RandomFloat(entity_dissolve_burn_scale.GetFloat() * 0.5, entity_dissolve_burn_scale.GetFloat() * 2);
+			spriteScale = RandomFloat(entity_dissolve_burn_scale.GetFloat() * 0.5, entity_dissolve_burn_scale.GetFloat());
 		//	spriteScale /= m_flFadeOutLength;
+		} 
+		else if ( m_nDissolveType == ENTITY_DISSOLVE_ASH_ONLY )
+		{
+			numParticles = entity_dissolve_burn_numparticles.GetInt();
+			iTempParts = entity_dissolve_burn_numparts.GetInt();
 		}
 #endif
 		for ( int j = 0; j < iTempParts; j++ )
 		{
 			// Skew the origin
-			offset = xDir * Helper_RandomFloat( -xScale*0.5f, xScale*0.5f ) + yDir * Helper_RandomFloat( -yScale*0.5f, yScale*0.5f );
+			offset = xDir * Helper_RandomFloat(-xScale*0.5f, xScale*0.5f) + yDir * Helper_RandomFloat(-yScale*0.5f, yScale*0.5f);
 			offset += vecSkew;
 
-			if ( random->RandomInt( 0, 2 ) != 0 )
+			if ( random->RandomInt(0, 2) != 0 )
 				continue;
 #ifdef DARKINTERVAL
-			if( m_nDissolveType == ENTITY_DISSOLVE_BURN )				
-				sParticle = (SimpleParticle *)m_pEmitter->AddParticle(sizeof(SimpleParticle), ParticleMgr()->GetPMaterial(sparkmat), vecAbsOrigin + offset);
+			if ( m_nDissolveType == ENTITY_DISSOLVE_BURN )
+				sParticle = ( SimpleParticle * )m_pEmitter->AddParticle(sizeof(SimpleParticle), ParticleMgr()->GetPMaterial(embers_mat), vecAbsOrigin + offset);
+			else if ( m_nDissolveType == ENTITY_DISSOLVE_ASH_ONLY )
+			{
+				sParticle = ( SimpleParticle * )m_pEmitter->AddParticle(sizeof(SimpleParticle), ParticleMgr()->GetPMaterial(ashes_mat), vecAbsOrigin + offset);
+			}
 			else
 #endif
-				sParticle = (SimpleParticle *) m_pEmitter->AddParticle( sizeof(SimpleParticle), g_Material_Spark, vecAbsOrigin + offset );
-			
+				sParticle = ( SimpleParticle * )m_pEmitter->AddParticle(sizeof(SimpleParticle), g_Material_Spark, vecAbsOrigin + offset);
+
 			if ( sParticle == NULL )
 				return 1;
 
-			sParticle->m_vecVelocity	= Vector( Helper_RandomFloat( -4.0f, 4.0f ), Helper_RandomFloat( -4.0f, 4.0f ), Helper_RandomFloat( 16.0f, 64.0f ) );
-			
+			sParticle->m_vecVelocity = Vector(Helper_RandomFloat(-4.0f, 4.0f), Helper_RandomFloat(-4.0f, 4.0f), Helper_RandomFloat(16.0f, 64.0f));
+
 			if ( m_nDissolveType == ENTITY_DISSOLVE_CORE )
 			{
 				if ( m_bCoreExplode == true )
 				{
-					Vector vDirection = (vecAbsOrigin + offset) - m_vDissolverOrigin;
-					VectorNormalize( vDirection );
+					Vector vDirection = ( vecAbsOrigin + offset ) - m_vDissolverOrigin;
+					VectorNormalize(vDirection);
 					sParticle->m_vecVelocity = vDirection * m_nMagnitude;
 				}
 			}
 
 			if ( sParticle->m_vecVelocity.z > 0 )
 			{
-				sParticle->m_uchStartSize	= random->RandomFloat( 4, 6 ) * spriteScale;
-			}
-			else
+				sParticle->m_uchStartSize = random->RandomFloat(4, 6) * spriteScale;
+			} else
 			{
-				sParticle->m_uchStartSize	= 2 * spriteScale;
+				sParticle->m_uchStartSize = 2 * spriteScale;
 			}
 
-			sParticle->m_flDieTime = random->RandomFloat( 0.4f, 0.5f );
-			
+			sParticle->m_flDieTime = random->RandomFloat(0.4f, 0.5f);
+
 			// If we're the last particles, last longer
 			if ( numParticles == 0 )
 			{
 				sParticle->m_flDieTime *= 2.0f;
 				sParticle->m_uchStartSize = 2 * spriteScale;
 #ifdef DARKINTERVAL
-				if (m_nDissolveType != ENTITY_DISSOLVE_BURN)
+				if ( m_nDissolveType != ENTITY_DISSOLVE_BURN )
+#endif
 				{
 					sParticle->m_flRollDelta = Helper_RandomFloat(-4.0f, 4.0f);
 				}
-#endif
+
 				if ( m_nDissolveType == ENTITY_DISSOLVE_CORE )
 				{
 					if ( m_bCoreExplode == true )
 					{
 						sParticle->m_flDieTime *= 2.0f;
-						sParticle->m_flRollDelta	= Helper_RandomFloat( -1.0f, 1.0f );
+						sParticle->m_flRollDelta = Helper_RandomFloat(-1.0f, 1.0f);
 					}
 				}
-			}
-			else
+			} else
 			{
 #ifdef DARKINTERVAL
-				if (m_nDissolveType != ENTITY_DISSOLVE_BURN)
+				if ( m_nDissolveType != ENTITY_DISSOLVE_BURN )
+#endif
 				{
 					sParticle->m_flRollDelta = Helper_RandomFloat(-8.0f, 8.0f);
 				}
-#endif
 			}
-			
-			sParticle->m_flLifetime		= 0.0f;
 
-			sParticle->m_flRoll			= Helper_RandomInt( 0, 360 );
+			sParticle->m_flLifetime = 0.0f;
+
+			sParticle->m_flRoll = Helper_RandomInt(0, 360);
+			
+#ifdef DARKINTERVAL
+			if ( m_nDissolveType == ENTITY_DISSOLVE_ASH_ONLY )
+			{
+				sParticle->m_flRoll = Helper_RandomInt(-4, 4);
+				sParticle->m_uchStartSize = spriteScale * 0.5f;
+				sParticle->m_flDieTime = random->RandomFloat(0.15f, 0.3f);
+			}
+#endif
 
 			float alpha = 255;
 
-			sParticle->m_uchColor[0]	= m_vEffectColor.x;
-			sParticle->m_uchColor[1]	= m_vEffectColor.y;
-			sParticle->m_uchColor[2]	= m_vEffectColor.z;
-			sParticle->m_uchStartAlpha	= alpha;
-			sParticle->m_uchEndAlpha	= 0;
-			sParticle->m_uchEndSize		= 0;
+			sParticle->m_uchColor[ 0 ] = m_vEffectColor.x;
+			sParticle->m_uchColor[ 1 ] = m_vEffectColor.y;
+			sParticle->m_uchColor[ 2 ] = m_vEffectColor.z;
+			sParticle->m_uchStartAlpha = alpha;
+			sParticle->m_uchEndAlpha = 0;
+			sParticle->m_uchEndSize = 0;
 		}
-			
+#ifdef DARKINTERVAL
+		if ( numParticles == 0 )
+		{
+			return 1;
+		}
+#endif
 		for ( int j = 0; j < numParticles; j++ )
 		{
-			offset = xDir * Helper_RandomFloat( -xScale*0.5f, xScale*0.5f ) + yDir * Helper_RandomFloat( -yScale*0.5f, yScale*0.5f );
+			offset = xDir * Helper_RandomFloat(-xScale*0.5f, xScale*0.5f) + yDir * Helper_RandomFloat(-yScale*0.5f, yScale*0.5f);
 			offset += vecSkew;
 #ifdef DARKINTERVAL
-			if (m_nDissolveType == ENTITY_DISSOLVE_BURN)
-				sParticle = (SimpleParticle *)m_pEmitter->AddParticle(sizeof(SimpleParticle), ParticleMgr()->GetPMaterial(muzzlemat), vecAbsOrigin + offset);
+			if ( m_nDissolveType == ENTITY_DISSOLVE_BURN )
+				sParticle = ( SimpleParticle * )m_pEmitter->AddParticle(sizeof(SimpleParticle), ParticleMgr()->GetPMaterial(fireglow_mat), vecAbsOrigin + offset);
+			else if ( m_nDissolveType == ENTITY_DISSOLVE_ASH_ONLY )
+				sParticle = ( SimpleParticle * )m_pEmitter->AddParticle(sizeof(SimpleParticle), ParticleMgr()->GetPMaterial(ashes_mat), vecAbsOrigin + offset);
 			else
 #endif
-				sParticle = (SimpleParticle *) m_pEmitter->AddParticle( sizeof(SimpleParticle), g_Material_AR2Glow, vecAbsOrigin + offset );
+				sParticle = ( SimpleParticle * )m_pEmitter->AddParticle(sizeof(SimpleParticle), g_Material_AR2Glow, vecAbsOrigin + offset);
 
 			if ( sParticle == NULL )
 				return 1;
@@ -829,118 +850,131 @@ int C_EntityDissolve::DrawModel( int flags )
 		//			continue;
 		//	}
 #endif
-			sParticle->m_vecVelocity	= Vector( Helper_RandomFloat( -4.0f, 4.0f ), Helper_RandomFloat( -4.0f, 4.0f ), Helper_RandomFloat( -64.0f, 128.0f ) );
-			sParticle->m_uchStartSize	= random->RandomFloat( 8, 12 ) * spriteScale;
-			sParticle->m_flDieTime		= 0.1f;
-			sParticle->m_flLifetime		= 0.0f;
+			sParticle->m_vecVelocity = Vector(Helper_RandomFloat(-4.0f, 4.0f), Helper_RandomFloat(-4.0f, 4.0f), Helper_RandomFloat(-64.0f, 128.0f));
+			sParticle->m_uchStartSize = random->RandomFloat(8, 12) * spriteScale;
+			sParticle->m_flDieTime = 0.1f;
+			sParticle->m_flLifetime = 0.0f;
 #ifdef DARKINTERVAL
-			if (m_nDissolveType != ENTITY_DISSOLVE_BURN)
+			if ( m_nDissolveType != ENTITY_DISSOLVE_BURN )
+#endif
 			{
 				sParticle->m_flRoll = Helper_RandomInt(0, 360);
 				sParticle->m_flRollDelta = Helper_RandomFloat(-2.0f, 2.0f);
 			}
-			else
+#ifdef DARKINTERVAL
+			if ( m_nDissolveType == ENTITY_DISSOLVE_ASH_ONLY )
 			{
+				// make small ash particles slowly float upward and disappear
+				sParticle->m_vecVelocity = Vector(Helper_RandomFloat(-4.0f, 4.0f), Helper_RandomFloat(-4.0f, 4.0f), Helper_RandomFloat(24.0f, 48.0f));
+				sParticle->m_uchStartSize = random->RandomFloat(1.5, 4) * spriteScale;
+				sParticle->m_flDieTime = 0.0f; // it's a hack to make it visually not produce any embers, because it's easier to hack it this way. Once the materials are ready, make it > 0.
 			}
 #endif
 			float alpha = 255;
 
-			sParticle->m_uchColor[0]	= m_vEffectColor.x;
-			sParticle->m_uchColor[1]	= m_vEffectColor.y;
-			sParticle->m_uchColor[2]	= m_vEffectColor.z;
-			sParticle->m_uchStartAlpha	= alpha;
-			sParticle->m_uchEndAlpha	= 0;
-			sParticle->m_uchEndSize		= 0;
+			sParticle->m_uchColor[ 0 ] = m_vEffectColor.x;
+			sParticle->m_uchColor[ 1 ] = m_vEffectColor.y;
+			sParticle->m_uchColor[ 2 ] = m_vEffectColor.z;
+			sParticle->m_uchStartAlpha = alpha;
+			sParticle->m_uchEndAlpha = 0;
+			sParticle->m_uchEndSize = 0;
 
 			if ( m_nDissolveType == ENTITY_DISSOLVE_CORE )
 			{
 				if ( m_bCoreExplode == true )
 				{
-					Vector vDirection = (vecAbsOrigin + offset) - m_vDissolverOrigin;
+					Vector vDirection = ( vecAbsOrigin + offset ) - m_vDissolverOrigin;
 
-					VectorNormalize( vDirection );
+					VectorNormalize(vDirection);
 
 					sParticle->m_vecVelocity = vDirection * m_nMagnitude;
 
-					sParticle->m_flDieTime		= 0.5f;
+					sParticle->m_flDieTime = 0.5f;
 				}
 			}
 #ifdef DARKINTERVAL
-			else if (m_nDissolveType == ENTITY_DISSOLVE_BURN)
+			else if ( m_nDissolveType == ENTITY_DISSOLVE_BURN )
 			{
-				Vector vDirection = (vecAbsOrigin + offset) - Vector(0,0,400);
+				Vector vDirection = ( vecAbsOrigin + offset ) - Vector(0, 0, 400);
 
 				VectorNormalize(vDirection);
 
-				sParticle->m_vecVelocity = vDirection * RandomFloat(0.9f,1.1f);
+				sParticle->m_vecVelocity = vDirection * RandomFloat(0.9f, 1.1f);
 
-				sParticle->m_flDieTime = 1.0f;
+				sParticle->m_flDieTime = 0.0f; // Burn sprites were replaced with EntityFlame effect, slam 0 lifetime so they don't show (lazy but easy)
 				sParticle->m_flLifetime = 0.0f;
 			}
+#endif
 		}
-
-		// don't do the follow ash emittance if not burn or electrical burn
-		if (m_nDissolveType != ENTITY_DISSOLVE_BURN && m_nDissolveType != ENTITY_DISSOLVE_ELECTRICAL) return 1;
-
-		// don't bother if the entity is set to not have ashes
-		if (!m_dissolve_spawn_ashes_bool) return 1;
-
-		CSmartPtr<CSimple3DEmitter> pAshEmitter = CSimple3DEmitter::Create("DissolveBurnAshes");
-		if (pAshEmitter == NULL)
-			return 1;
-		
-		pAshEmitter->SetSortOrigin(vecAbsOrigin);
-
-		// Handle increased scale
-		const float flMaxSpeed = 400.0f;
-		const float flMinSpeed = 50.0f;
-		float flAngularSpray = 1.0f;
-
-		// Setup our collision information
-		pAshEmitter->m_ParticleCollision.Setup(vecAbsOrigin, &yvec, flAngularSpray, flMinSpeed, flMaxSpeed, 400.0f, 0.2f);
-
-		Particle3D *pAshParticle;
-		Vector spawnOffset;
-		
-		// ashes for the burn/electrical types
-		for (int k = 0; k < entity_dissolve_burn_numashes.GetInt(); k++)
+#ifdef DARKINTERVAL
+		// don't do the follow ash emittance if not ash, burn or electrical burn
+		if ( m_nDissolveType == ENTITY_DISSOLVE_BURN
+			|| m_nDissolveType == ENTITY_DISSOLVE_ASH_ONLY)
 		{
-			// Skew the origin
-			offset = xDir * Helper_RandomFloat(-xScale*0.5f, xScale*0.5f) + yDir * Helper_RandomFloat(-yScale*0.5f, yScale*0.5f);
-			offset += vecSkew;
+		// don't bother if the entity is set to not have ashes
+	//	if (!m_dissolve_spawn_ashes_bool) return 1;
 
-			spawnOffset = vecAbsOrigin + offset;
-			pAshParticle = (Particle3D *)pAshEmitter->AddParticle(sizeof(Particle3D), g_Mat_Fleck_Cement[random->RandomInt(0, 1)], spawnOffset);
+			CSmartPtr<CSimple3DEmitter> pAshEmitter = CSimple3DEmitter::Create("DissolveBurnAshes");
+			if ( pAshEmitter == NULL )
+				return 1;
 
-			if (pAshParticle == NULL)
-				break;
+			pAshEmitter->SetSortOrigin(vecAbsOrigin);
 
-			pAshParticle->m_flLifeRemaining = random->RandomFloat(2.0f, 3.0f);
+			// Handle increased scale
+			const float flMaxSpeed = 400.0f;
+			const float flMinSpeed = 50.0f;
+			float flAngularSpray = 1.0f;
 
-			if (abs(sParticle->m_vecVelocity.z) > 0)
+			// Setup our collision information
+			pAshEmitter->m_ParticleCollision.Setup(vecAbsOrigin, &yvec, flAngularSpray, flMinSpeed, flMaxSpeed, 400.0f, 0.2f);
+
+			Particle3D *pAshParticle;
+			Vector spawnOffset;
+
+			// ashes for the burn/electrical types
+			for ( int k = 0; k < entity_dissolve_burn_numashes.GetInt(); k++ )
 			{
-				pAshParticle->m_uchSize = random->RandomFloat(4, 8) * spriteScale;
+				// Skew the origin
+				offset = xDir * Helper_RandomFloat(-xScale*0.5f, xScale*0.5f) + yDir * Helper_RandomFloat(-yScale*0.5f, yScale*0.5f);
+				offset += vecSkew;
+
+				spawnOffset = vecAbsOrigin + offset;
+				pAshParticle = ( Particle3D * )pAshEmitter->AddParticle(sizeof(Particle3D), g_Mat_Fleck_Cement[ random->RandomInt(0, 1) ], spawnOffset);
+
+				if ( pAshParticle == NULL )
+					break;
+
+				pAshParticle->m_flLifeRemaining = random->RandomFloat(2.0f, 3.0f);
+
+				if ( abs(sParticle->m_vecVelocity.z) > 0 )
+				{
+					pAshParticle->m_uchSize = random->RandomFloat(4, 8) * spriteScale;
+				} else
+				{
+					pAshParticle->m_uchSize = 4.0 * spriteScale;
+				}
+
+				pAshParticle->m_vecVelocity = Vector(Helper_RandomFloat(-16.0f, 16.0f), Helper_RandomFloat(-16.0f, 16.0f), Helper_RandomFloat(-128.0f, -256.0f));
+
+				if ( m_nDissolveType == ENTITY_DISSOLVE_ASH_ONLY )
+				{
+					pAshParticle->m_vecVelocity = Vector(Helper_RandomFloat(-16.0f, 16.0f), Helper_RandomFloat(-16.0f, 16.0f), Helper_RandomFloat(-32.0f, -64.0f));
+				}
+
+				pAshParticle->m_vAngles = RandomAngle(0, 360);
+				pAshParticle->m_flAngSpeed = random->RandomFloat(-800, 800);
+
+				pAshParticle->m_flLifeRemaining = RandomFloat(10.0f, 15.0f);
+
+				pAshParticle->m_uchFrontColor[ 0 ] = 50;
+				pAshParticle->m_uchFrontColor[ 1 ] = 50;
+				pAshParticle->m_uchFrontColor[ 2 ] = 50;
+				pAshParticle->m_uchBackColor[ 0 ] = 15;
+				pAshParticle->m_uchBackColor[ 1 ] = 15;
+				pAshParticle->m_uchBackColor[ 2 ] = 15;
 			}
-			else
-			{
-				pAshParticle->m_uchSize = 4.0 * spriteScale;
-			}
-
-			pAshParticle->m_vecVelocity = Vector(Helper_RandomFloat(-16.0f, 16.0f), Helper_RandomFloat(-16.0f, 16.0f), Helper_RandomFloat(-128.0f, -256.0f));
-
-			pAshParticle->m_vAngles = RandomAngle(0, 360);
-			pAshParticle->m_flAngSpeed = random->RandomFloat(-800, 800);
-
-			pAshParticle->m_flLifeRemaining = RandomFloat(10.0f, 15.0f);
-
-			pAshParticle->m_uchFrontColor[0] = 50;
-			pAshParticle->m_uchFrontColor[1] = 50;
-			pAshParticle->m_uchFrontColor[2] = 50;
-			pAshParticle->m_uchBackColor[0] = 15;
-			pAshParticle->m_uchBackColor[1] = 15;
-			pAshParticle->m_uchBackColor[2] = 15;	
-#endif // DARKINTERVAL
 		}
+#endif // DARKINTERVAL
 	}
 
 	return 1;

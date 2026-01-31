@@ -17,7 +17,6 @@
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
-
 static const char *s_pElectroThinkContext = "ElectroThinkContext";
 #ifdef DARKINTERVAL // todo - turn into keyfields?
 ConVar dissolve_fade_in_start_time("dissolve_fade_in_start_time", "0.0");
@@ -26,6 +25,10 @@ ConVar dissolve_fade_out_start_time("dissolve_fade_out_start_time", "2.0");
 ConVar dissolve_fade_out_end_time("dissolve_fade_out_end_time", "2.0");
 ConVar dissolve_fade_out_model_start_time("dissolve_fade_out_model_start_time", "1.9");
 ConVar dissolve_fade_out_model_end_time("dissolve_fade_out_model_end_time", "2.0");
+
+ConVar dissolve_ash_fade_out_start_time("dissolve_ash_fade_out_start_time", "0.7f");
+ConVar dissolve_ash_fade_out_model_start_time("dissolve_ash_fade_out_model_start_time", "0.2f");
+ConVar dissolve_ash_fade_out_model_length_time("dissolve_ash_fade_out_model_length_time", "0.3f");
 #endif
 //-----------------------------------------------------------------------------
 // Lifetime 
@@ -105,6 +108,8 @@ CEntityDissolve::CEntityDissolve( void )
 {
 	m_flStartTime	= 0.0f;
 	m_nMagnitude = 250;
+
+	m_nDissolveType = ENTITY_DISSOLVE_NORMAL;
 }
 
 CEntityDissolve::~CEntityDissolve( void )
@@ -164,7 +169,7 @@ void CEntityDissolve::Spawn()
 		m_flFadeInLength = CORE_DISSOLVE_FADEIN_LENGTH;
 	}
 #ifdef DARKINTERVAL
-	if (m_nDissolveType == ENTITY_DISSOLVE_BURN)
+	if (m_nDissolveType == ENTITY_DISSOLVE_BURN )
 	{
 		m_flFadeInStart = DISSOLVE_FADE_IN_START_TIME;
 		m_flFadeInLength = CORE_DISSOLVE_FADEIN_LENGTH * 3;
@@ -172,6 +177,14 @@ void CEntityDissolve::Spawn()
 
 		m_flFadeOutModelStart = DISSOLVE_FADE_OUT_MODEL_START_TIME * 2;
 		m_flFadeOutModelLength = CORE_DISSOLVE_FADEIN_LENGTH * 3;
+	}
+	if ( m_nDissolveType == ENTITY_DISSOLVE_ASH_ONLY )
+	{
+		m_flFadeInStart = 0.0f;
+		m_flFadeInLength = 0.1f;
+		m_flFadeOutStart = dissolve_ash_fade_out_start_time.GetFloat();
+		m_flFadeOutModelStart = dissolve_ash_fade_out_model_start_time.GetFloat();
+		m_flFadeOutModelLength = dissolve_ash_fade_out_model_length_time.GetFloat();
 	}
 #endif
 	m_nRenderMode = kRenderTransColor;
@@ -195,7 +208,6 @@ void CEntityDissolve::Spawn()
 		SetNextThink( CURTIME + 0.01f );
 	}
 }
-
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -238,7 +250,7 @@ CEntityDissolve *CEntityDissolve::Create( CBaseEntity *pTarget, const char *pMat
 	if ( !pMaterialName )
 	{
 #ifdef DARKINTERVAL
-		if (nDissolveType == ENTITY_DISSOLVE_BURN)
+		if (nDissolveType == ENTITY_DISSOLVE_BURN || nDissolveType == ENTITY_DISSOLVE_ASH_ONLY)
 			pMaterialName = DISSOLVE_SPRITE_BURN_NAME;
 		else
 #endif
@@ -315,6 +327,10 @@ CEntityDissolve *CEntityDissolve::Create( CBaseEntity *pTarget, const char *pMat
 			UTIL_Remove(pTarget);
 			pTarget = pRagdoll;
 		}
+
+		// Attach a flame to the burning target
+		CBaseAnimating *anim = dynamic_cast<CBaseAnimating*>(pTarget);
+		if( anim) anim->Ignite(10.0f, false);
 	}
 #endif // DARKINTERVAL
 	pDissolve->SetModelName( AllocPooledString(pMaterialName) );
@@ -325,7 +341,7 @@ CEntityDissolve *CEntityDissolve::Create( CBaseEntity *pTarget, const char *pMat
 	// Send to the client even though we don't have a model
 	pDissolve->AddEFlags( EFL_FORCE_CHECK_TRANSMIT );
 
-	// Play any appropriate noises when we start to dissolve
+	// Play any appropriate noises when we start to dissolve // DI TODO - add sounds for burning too?
 	if ( (nDissolveType == ENTITY_DISSOLVE_ELECTRICAL) || (nDissolveType == ENTITY_DISSOLVE_ELECTRICAL_LIGHT) )
 	{
 		pTarget->DispatchResponse( "TLK_ELECTROCUTESCREAM" );
