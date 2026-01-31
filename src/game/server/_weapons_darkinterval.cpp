@@ -45,6 +45,9 @@ extern ConVar sk_plr_dmg_tau;
 extern ConVar sk_auto_reload_time;
 extern ConVar sk_plr_num_shotgun_pellets;
 extern ConVar sk_auto_reload_enabled;
+#ifdef DARKINTERVAL // add a skill convar controlling altire number of pellets
+extern ConVar sk_plr_num_shotgun_pellets_doublefire;
+#endif
 
 // indeces and such
 extern short g_sModelIndexFireball; // regular explosion
@@ -2185,7 +2188,11 @@ void CWeaponShotgun::SecondaryAttack(void)
 		Vector vecAiming = player->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
 
 		// Fire the bullets
+#ifdef DARKINTERVAL // add a skill convar controlling altire number of pellets
+		player->FireBullets(sk_plr_num_shotgun_pellets_doublefire.GetInt(), vecSrc, vecAiming, GetBulletSpread(), MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 0, -1, -1, 0, NULL, false, false);
+#else
 		player->FireBullets(12, vecSrc, vecAiming, GetBulletSpread(), MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 0, -1, -1, 0, NULL, false, false);
+#endif
 		player->ViewPunch(QAngle(random->RandomFloat(-5, 5), 0, 0));
 
 		player->SetMuzzleFlashTime(CURTIME + 1.0);
