@@ -1315,3 +1315,80 @@ void ClientCommand( CBasePlayer *pPlayer, const CCommand &args )
 		}
 	}
 }
+
+#ifdef DARKINTERVAL
+char *build_date = __DATE__ ;
+char *build_time = __TIME__;
+char *mon[12] = 
+{ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+char mond[12] = 
+{ 31,    28,    31,    30,    31,    30,    31,    31,    30,    31,    30,    31 };
+
+class CDIBuildNumber
+{
+public:
+	CDIBuildNumber( void )
+	{
+		ComputeBuildNumber();
+	}
+	
+	// returns days since Dec 13 2024
+	int	GetBuildNumber( void ) 
+	{
+		return m_nBuildNumber;
+	}
+
+private:
+	void ComputeBuildNumber( void )
+	{
+		int m = 0; 
+		int d = 0;
+		int y = 0;
+
+		for (m = 0; m < 11; m++)
+		{
+			if (Q_strncasecmp( &build_date[0], mon[m], 3 ) == 0)
+				break;
+			d += mond[m];
+		}
+
+		d += atoi( &build_date[4] ) - 1;
+
+		y = atoi( &build_date[7] ) - 1900;
+
+		m_nBuildNumber = d + (int)((y - 1) * 365.25);
+
+		if (((y % 4) == 0) && m > 1)
+		{
+			m_nBuildNumber += 1;
+		}
+
+		m_nBuildNumber -= 45272;  // Dec 13 2024 (Part 2 release)
+	}
+
+	int m_nBuildNumber;
+};
+
+// Singleton
+static CDIBuildNumber g_DI_BuildNumber;
+
+int di_build_number( void )
+{
+	return g_DI_BuildNumber.GetBuildNumber();
+}
+//------------------------------------------------------------------------------
+// Purpose : A command that reports this Dark Interval build's version.
+// Input   :
+// Output  :
+//------------------------------------------------------------------------------
+void CC_DarkIntervalVersion( const CCommand &args )
+{
+	float version = 2.1; // keep this updated between releases
+
+	ConMsg("Playing Dark Interval version %.1f\n", version);
+	ConMsg("Build timestamp: %s %s.\n", build_time, build_date);
+	ConMsg("Build number: %i\n", di_build_number());
+}
+static ConCommand darkinterval_version("darkinterval_version", CC_DarkIntervalVersion, "Reports this Dark Interval build's version\n", FCVAR_NONE);
+
+#endif
