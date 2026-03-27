@@ -7,7 +7,11 @@
 #include "cbase.h"
 #include "c_baseentity.h"
 #ifdef WIN32
+#if _MSC_VER < 1923
 #include <typeinfo.h>
+#else
+#include <typeinfo>
+#endif
 #endif
 #include "tier0/vprof.h"
 

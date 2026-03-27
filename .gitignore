@@ -83,3 +83,18 @@ fxctmp9_tmp/
 [Dd]ebug_dx9_mod_episodic/
 [Dd]arkinterval_shaders_dll/
 *.sentinel
+
+# Build artifacts
+*.dll
+*.dll.recipe
+*.exe.recipe
+*.exp
+*.idb
+*.lib
+
+# Resource scripts intermediate
+RC[a-z0-9]*
+*.res
+
+# MSVC static analyzer results
+*.lastcodeanalysissucceeded

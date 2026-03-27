@@ -9,7 +9,11 @@
 
 #include "cbase.h"
 #ifdef _WIN32
-#include "typeinfo.h"
+#if _MSC_VER < 1923
+#include <typeinfo.h>
+#else
+#include <typeinfo>
+#endif
 // BUGBUG: typeinfo stomps some of the warning settings (in yvals.h)
 #pragma warning(disable:4244)
 #elif POSIX

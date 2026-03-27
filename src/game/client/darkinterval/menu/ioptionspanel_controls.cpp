@@ -138,7 +138,7 @@ void COptionsPanel_Controls::SaveControlsSettings()
 	}
 	else
 	{
-		m_pitch.SetValue(fabs(m_pitch.GetFloat()));
+		m_pitch.SetValue(fabsf(m_pitch.GetFloat()));
 	}
 
 	ConVarRef m_yaw("m_yaw");
@@ -149,7 +149,7 @@ void COptionsPanel_Controls::SaveControlsSettings()
 	}
 	else
 	{
-		m_yaw.SetValue(fabs(m_yaw.GetFloat()));
+		m_yaw.SetValue(fabsf(m_yaw.GetFloat()));
 	}
 
 	ApplyChangesToConVar("m_filter", m_pMouseSmoothingButton->IsSelected());
