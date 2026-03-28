@@ -81,7 +81,7 @@ bool CBaseCombatCharacter::Weapon_CanSwitchTo( CBaseCombatWeapon *pWeapon )
 		if (pVehicle && !pPlayer->UsingStandardWeaponsInVehicle())
 			return false;
 #ifdef DARKINTERVAL
-		if (pPlayer->m_nButtons & IN_ATTACK | IN_ATTACK2 | IN_RELOAD)
+		if (pPlayer->m_nButtons & (IN_ATTACK | IN_ATTACK2 | IN_RELOAD))
 			return false; // never allow the player to switch weapons right while firing or reloading a weapon.
 #endif
 	}
