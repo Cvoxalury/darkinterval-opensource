@@ -38,7 +38,11 @@ typedef const char *(*ActivityList_NameForIndex_t)( int iActivityIndex );
 // NVNT haptic system interface declaration
 abstract_class IHaptics
 {
-public: // Initialization.
+public:
+#ifdef DARKINTERVAL  // Add virtual destructor to not leak implementation when delete interface.
+	virtual ~IHaptics() = 0;
+#endif
+	// Initialization.
 	virtual bool Initialize(IVEngineClient* newengine, 
 		IViewRender *newview, 
 		vgui::IInputInternal* newinput, 

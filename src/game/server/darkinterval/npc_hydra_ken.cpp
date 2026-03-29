@@ -1062,7 +1062,7 @@ bool CNPC_Hydra_Ken::ContractBetweenStuckSegments()
 			}
 		}
 	}
-	if (iShortest = -1)
+	if (iShortest == -1)
 		return false;
 
 	// FIXME: check for tunneling

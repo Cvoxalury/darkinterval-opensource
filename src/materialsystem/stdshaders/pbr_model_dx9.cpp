@@ -1067,7 +1067,7 @@ SHADER_DRAW
 			SetVertexShaderTextureTransform(VERTEX_SHADER_SHADER_SPECIFIC_CONST_10, info.accumulateTextureTransform);
 
 		if (/*bHasDetailTexture ||*/ bTreeSway)
-			SetVertexShaderTextureScaledTransform(VERTEX_SHADER_SHADER_SPECIFIC_CONST_4, info.baseTextureTransform, 1.0);
+			SetVertexShaderTextureScaledTransform(VERTEX_SHADER_SHADER_SPECIFIC_CONST_4, info.baseTextureTransform, 1);
 
 		// Treesway
 		if (bTreeSway)

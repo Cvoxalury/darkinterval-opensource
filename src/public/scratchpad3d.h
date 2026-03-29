@@ -51,6 +51,9 @@ public:
 							m_pCachedRenderData = NULL;
 						}
 
+#ifdef DARKINTERVAL		// Do not leak implementations when does delete *CBaseCommand.
+						virtual
+#endif
 						~CBaseCommand()
 						{
 							ReleaseCachedRenderData();

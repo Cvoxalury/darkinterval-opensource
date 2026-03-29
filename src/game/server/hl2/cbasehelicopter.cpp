@@ -360,7 +360,7 @@ void CBaseHelicopter::DrawRotorWash( float flAltitude, const Vector &vecRotorOri
 {
 #ifdef DARKINTERVAL // make it an option because we don't always want the helicopters making ropes go crazy
 	float force = m_flRopeShakeForce;
-	if (force = 0) force = 128;
+	if (force == 0) force = 128;
 #endif
 	// Shake any ropes nearby
 	if ( random->RandomInt( 0, 2 ) == 0 )

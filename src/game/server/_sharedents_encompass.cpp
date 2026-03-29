@@ -1412,7 +1412,8 @@ void CC_Hunter_Shoot_Flechette(const CCommand& args)
 		// Shoot the flechette.		
 		Vector forward;
 		pPlayer->EyeVectors(&forward);
-		entity->Shoot(forward * FLECHETTE_AIR_VELOCITY, false);
+		Vector velocity = forward * FLECHETTE_AIR_VELOCITY;
+		entity->Shoot(velocity, false);
 	}
 
 	CBaseEntity::SetAllowPrecache(allowPrecache);

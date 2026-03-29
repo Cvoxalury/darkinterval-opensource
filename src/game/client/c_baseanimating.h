@@ -82,7 +82,11 @@ public:
 	QAngle	m_angRotation;
 	Vector	m_vOriginVelocity;
 	int		m_nLastFramecount : 31;
+#ifdef DARKINTERVAL
+	unsigned int		m_bAnglesComputed : 1;  // int : 1 allow to assign only -1 and 0. 1 overflows!
+#else
 	int		m_bAnglesComputed : 1;
+#endif
 };
 
 

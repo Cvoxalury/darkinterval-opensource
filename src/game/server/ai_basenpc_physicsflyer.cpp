@@ -36,7 +36,15 @@ END_DATADESC()
 void CAI_BasePhysicsFlyingBot::GetVelocity(Vector *vVelocity, AngularImpulse *vAngVelocity)
 {
 #ifdef DARKINTERVAL
-	if (GetMoveType() != MOVETYPE_VPHYSICS) vVelocity = &Vector(0, 0, 0); vAngVelocity = &AngularImpulse(0, 0, 0); return;
+	if (GetMoveType() != MOVETYPE_VPHYSICS)
+	{
+		static Vector origin(0, 0, 0);
+		vVelocity = &origin;
+
+		static AngularImpulse impulse(0, 0, 0);
+		vAngVelocity = &impulse;
+		return;
+	}
 #else
 	Assert(GetMoveType() == MOVETYPE_VPHYSICS);
 #endif

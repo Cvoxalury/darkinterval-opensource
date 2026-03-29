@@ -43,6 +43,10 @@ ConVar hap_damagescale_game("hap_damagescale_game", HAP_DEFAULT_DAMAGE_SCALE_GAM
 
 #endif
 
+#if defined(CLIENT_DLL) && defined(DARKINTERVAL)  // Define virtual desctructor to be able to delete it.
+IHaptics::~IHaptics() {}
+#endif
+
 void HapticSendWeaponAnim(CBaseCombatWeapon* weapon, int iActivity)
 {
 	//ignore idle

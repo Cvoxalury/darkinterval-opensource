@@ -503,15 +503,15 @@ void CWeatherSettings_HDR::OnTextChanged()
 	float value;
 
 	m_pReadout_HDRMin->GetText(buf, 16);
-	sscanf(buf, "%.2f", &value);
+	sscanf(buf, "%f", &value);
 	m_pHDRMinSlider->SetSliderValue(value);
 
 	m_pReadout_HDRMax->GetText(buf, 16);
-	sscanf(buf, "%.2f", &value);
+	sscanf(buf, "%f", &value);
 	m_pHDRMaxSlider->SetSliderValue(value);
 
 	m_pReadout_Bloom->GetText(buf, 16);
-	sscanf(buf, "%.2f", &value);
+	sscanf(buf, "%f", &value);
 	m_pBloomSlider->SetSliderValue(value);
 }
 
@@ -651,27 +651,27 @@ void CWeatherSettings_DoF::OnTextChanged()
 	float value;
 
 	m_pReadout_DoFFarFocusDepth->GetText(buf, 16);
-	sscanf(buf, "%.2f", &value);
+	sscanf(buf, "%f", &value);
 	m_pDoFFarFocusDepthSlider->SetSliderValue(value);
 
 	m_pReadout_DoFFarBlurDepth->GetText(buf, 16);
-	sscanf(buf, "%.2f", &value);
+	sscanf(buf, "%f", &value);
 	m_pDoFFarBlurDepthSlider->SetSliderValue(value);
 
 	m_pReadout_DoFFarBlurRadius->GetText(buf, 16);
-	sscanf(buf, "%.2f", &value);
+	sscanf(buf, "%f", &value);
 	m_pDoFFarBlurRadiusSlider->SetSliderValue(value);
 
 	m_pReadout_DoFNearFocusDepth->GetText(buf, 16);
-	sscanf(buf, "%.2f", &value);
+	sscanf(buf, "%f", &value);
 	m_pDoFNearFocusDepthSlider->SetSliderValue(value);
 
 	m_pReadout_DoFNearBlurDepth->GetText(buf, 16);
-	sscanf(buf, "%.2f", &value);
+	sscanf(buf, "%f", &value);
 	m_pDoFNearBlurDepthSlider->SetSliderValue(value);
 
 	m_pReadout_DoFNearBlurRadius->GetText(buf, 16);
-	sscanf(buf, "%.2f", &value);
+	sscanf(buf, "%f", &value);
 	m_pDoFNearBlurRadiusSlider->SetSliderValue(value);
 
 }

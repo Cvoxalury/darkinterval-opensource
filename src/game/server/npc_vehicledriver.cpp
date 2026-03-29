@@ -39,7 +39,7 @@ void CVehicleDriverDummy::Spawn()
 
 	if (pOwner)
 	{
-		CNPC_VehicleDriver *pOwner = assert_cast<CNPC_VehicleDriver*>(pOwner);
+		CNPC_VehicleDriver *pDriver = assert_cast<CNPC_VehicleDriver*>(pOwner);
 		SetModel(STRING(GetModelName())); // precached by the driver
 		SetSolid(SOLID_NONE);
 	}

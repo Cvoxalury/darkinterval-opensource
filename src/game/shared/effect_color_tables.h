@@ -33,10 +33,17 @@ enum
 // Commander mode table
 static colorentry_t commandercolors[] =
 {
+#ifdef DARKINTERVAL  // Colors are unsigned char in range 0...255, not floats 0...1!
+	{ COMMAND_POINT_RED,	255,	0,		0	},
+	{ COMMAND_POINT_BLUE,	0,		0,		255	},
+	{ COMMAND_POINT_GREEN,	0,		255,	0	},
+	{ COMMAND_POINT_YELLOW,	255,	255,	0	},
+#else
 	{ COMMAND_POINT_RED,	1.0,	0.0,	0.0	},
 	{ COMMAND_POINT_BLUE,	0.0,	0.0,	1.0	},
 	{ COMMAND_POINT_GREEN,	0.0,	1.0,	0.0	},
 	{ COMMAND_POINT_YELLOW,	1.0,	1.0,	0.0	},
+#endif
 };
 
 static colorentry_t bloodcolors[] =

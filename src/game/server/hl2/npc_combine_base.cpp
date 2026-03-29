@@ -3284,7 +3284,9 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 		case COMBINE_AE_KICK:
 			{
 #ifdef DARKINTERVAL
-			MeleeAttack(75, 10, QAngle(20.0f, 0.0f, -12.0f), Vector(-250.0f, 1.0f, 1.0f));
+			QAngle viewPunch(20.0f, 0.0f, -12.0f);
+			Vector shove(-250.0f, 1.0f, 1.0f);
+			MeleeAttack(75, 10, viewPunch, shove);
 			m_Sentences.Speak("COMBINE_KICK");
 			handledEvent = true;
 			break;
@@ -3322,7 +3324,9 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 #ifdef DARKINTERVAL
 		case COMBINE_AE_KICK_THAT_IS_ACTUALLY_A_KICK: // because COMBINE_AE_KICK is actually an elbow punch!
 		{
-			MeleeAttack(85, 20, QAngle(20.0f, 0.0f, -12.0f), Vector(-500.0f, 1.0f, 1.0f));
+			QAngle viewPunch(20.0f, 0.0f, -12.0f);
+			Vector shove(-500.0f, 1.0f, 1.0f);
+			MeleeAttack(85, 20, viewPunch, shove);
 			m_Sentences.Speak("COMBINE_KICK");
 			handledEvent = true;
 			break;

@@ -1065,7 +1065,11 @@ void CViewRender::DrawSecondarySkybox(void)
 	const char	*skyboxsuffix[6] = { "rt", "bk", "lf", "ft", "up", "dn" };
 	ConVarRef sky2var("sv_skyname");
 
+#ifdef DARKINTERVAL
+	const char *skyname = "";  // Ensure sky name always initialized as it is dereferenced later.
+#else
 	const char *skyname;
+#endif
 	if (sky2var.IsValid())
 	{
 		skyname = sky2var.GetString();

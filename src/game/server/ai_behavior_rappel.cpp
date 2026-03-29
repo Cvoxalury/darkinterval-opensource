@@ -258,7 +258,8 @@ void CAI_RappelBehavior::RunTask( const Task_t *pTask )
 
 				GetOuter()->m_OnRappelTouchdown.FireOutput( GetOuter(), GetOuter(), 0 );
 #ifdef DARKINTERVAL
-				GetOuter()->Teleport(&(GetOuter()->GetAbsOrigin() + Vector(0, 0, 1)), NULL, NULL);
+				Vector position = GetOuter()->GetAbsOrigin() + Vector(0, 0, 1);
+				GetOuter()->Teleport(&position, NULL, NULL);
 #endif
 				GetOuter()->RemoveFlag( FL_FLY );
 				

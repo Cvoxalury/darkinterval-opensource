@@ -4258,7 +4258,11 @@ void CSmallHydra::HandleAnimEvent(animevent_t *pEvent)
 	if (pEvent->event == AE_HYDRA_ATTACK_HIT)
 	{
 		if (IsCurSchedule(SCHED_MELEE_ATTACK1))
-			MeleeAttack(150, sk_hydra_small_dmg.GetFloat(), QAngle(20.0f, 0.0f, -12.0f), Vector(-250.0f, 1.0f, 1.0f));
+		{
+			QAngle viewPunch(20.0f, 0.0f, -12.0f);
+			Vector shove(-250.0f, 1.0f, 1.0f);
+			MeleeAttack(150, sk_hydra_small_dmg.GetFloat(), viewPunch, shove);
+		}
 		else if (IsCurSchedule(SCHED_MELEE_ATTACK2))
 			RangeAttack();
 		return;

@@ -229,7 +229,11 @@ CAI_StandoffBehavior::CAI_StandoffBehavior( CAI_BaseNPC *pOuter )
 	SetPosture( AIP_STANDING );
 	m_SavedDistTooFar = FLT_MAX;
 	m_fForceNewEnemy = false;
+#ifdef DARKINTERVAL  // Second argument is bool, not float.
+	m_TimePreventForceNewEnemy.Set( 3.0, true );
+#else
 	m_TimePreventForceNewEnemy.Set( 3.0, 6.0 );
+#endif
 	m_fIgnoreFronts = false;
 	m_bHasLowCoverActivity = false;
 }

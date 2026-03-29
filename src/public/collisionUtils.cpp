@@ -56,7 +56,7 @@ static float ComputeBoxOffset( const Ray_t& ray )
 	offset *= InvRSquared( ray.m_Delta );
 
 	// 1e-3 is an epsilon
-	return offset + 1e-3;
+	return offset + 1e-3f;
 }
 
 

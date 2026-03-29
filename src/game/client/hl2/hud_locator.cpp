@@ -281,7 +281,11 @@ void CHudLocator::DrawGraduations(float flYawPlayerFacing)
 		xPos -= (1);
 		
 		wchar_t text[1];
+#ifdef DARKINTERVAL  // _snwprintf for char* should use %S, not %s format specifier.
+		_snwprintf(text, sizeof(text), L"%S", tallLine ? "|" : ".");
+#else
 		_snwprintf(text, sizeof(text), L"%s", tallLine ? "|" : ".");		
+#endif
 		vgui::surface()->DrawSetTextFont(m_hTextFont);
 		vgui::surface()->DrawSetTextColor(clrGrad);
 		vgui::surface()->DrawSetTextPos(xPos, yPos);
