@@ -11,6 +11,6 @@
 #define	NPC_ANTLIONGRUB_H
 #ifdef DARKINTERVAL
 //Interaction IDs
-int	g_interactionAntlionGrubAlert = 0;
+extern int	g_interactionAntlionGrubAlert;
 #endif
 #endif	//NPC_ANTLIONGRUB_H

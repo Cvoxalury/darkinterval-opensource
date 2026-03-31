@@ -46,7 +46,7 @@ public:
 			{
 				(fieldtype_t)FIELD_TYPE, 
 				"T", 
-				{ offsetof(typename UTLMAP::Node_t, elem), 0 },
+				{ (int)offsetof(typename UTLMAP::Node_t, elem), 0 },
 				1, 
 				FTYPEDESC_SAVE, 
 				NULL, 
@@ -112,7 +112,7 @@ public:
 			{
 				(fieldtype_t)FIELD_TYPE, 
 				"T", 
-				{ offsetof(typename UTLMAP::Node_t, elem), 0 },
+				{ (int)offsetof(typename UTLMAP::Node_t, elem), 0 },
 				1, 
 				FTYPEDESC_SAVE, 
 				NULL, 
@@ -192,7 +192,7 @@ public:
 //-------------------------------------
 
 #define DEFINE_UTLMAP(name,keyType,fieldtype) \
-	{ FIELD_CUSTOM, #name, { offsetof(classNameTypedef,name), 0 }, 1, FTYPEDESC_SAVE, NULL, CUtlMapDataopsInstantiator<keyType, fieldtype>::GetDataOps(&(((classNameTypedef *)0)->name)), NULL }
+	{ FIELD_CUSTOM, #name, { (int)offsetof(classNameTypedef,name), 0 }, 1, FTYPEDESC_SAVE, NULL, CUtlMapDataopsInstantiator<keyType, fieldtype>::GetDataOps(&(((classNameTypedef *)0)->name)), NULL }
 
 
 #endif // SAVERESTORE_UTLMAP_H

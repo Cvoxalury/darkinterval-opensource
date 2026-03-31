@@ -1901,7 +1901,11 @@ float CNPC_MetroPolice::AimBurstAtReactionTime( float flReactionTime, float flDi
 #define AIM_AT_SHOT_SPEED_COUNT 6
 #define AIM_AT_SHOT_DIST_COUNT 6
 
+#ifdef DARKINTERVAL   // Expected to be float.
+static float s_pShotCountFraction[AIM_AT_TIME_DIST_COUNT][AIM_AT_TIME_SPEED_COUNT] =
+#else
 static int s_pShotCountFraction[AIM_AT_TIME_DIST_COUNT][AIM_AT_TIME_SPEED_COUNT] =
+#endif
 {
 	{  3.0f, 3.0f,  2.5f,  1.5f,  1.0f, 0.0f },
 	{  3.0f, 3.0f,  2.5f,  1.25f, 0.5f, 0.0f },

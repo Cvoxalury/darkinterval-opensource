@@ -490,6 +490,11 @@ class CAI_BaseNPC : public CBaseCombatCharacter,
 {
 	DECLARE_CLASS( CAI_BaseNPC, CBaseCombatCharacter );
 
+#if defined(DARKINTERVAL) && defined(__clang__)
+	// ScheduleLoadHelperImpl accesses protected LoadSchedules!
+	friend class ScheduleLoadHelperImpl;
+#endif
+
 public:
 	//-----------------------------------------------------
 	//

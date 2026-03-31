@@ -2711,7 +2711,7 @@ void CPropAPC::FireRocket(void)
 	pGrenade->SetDamage(50);
 	pGrenade->SetDamageRadius(128);
 	pGrenade->Launch(this,
-		(m_hRocketTarget != NULL ? m_hRocketTarget : pOwner->GetEnemy()),
+		(m_hRocketTarget != NULL ? (CBaseEntity*)m_hRocketTarget : pOwner->GetEnemy()),
 		vecVelocity,
 		800,
 		2.4,

@@ -15174,7 +15174,7 @@ void CNPC_SynthScanner::BlindFlashTarget(CBaseEntity *pTarget)
 
 		if (tr.startsolid == false && tr.fraction == 1.0)
 		{
-			color32 yellow = { 240, 255, 50, SY_SCANNER_FLASH_MAX_VALUE * dotPr };
+			color32 yellow = { 240, 255, 50, (byte)(SY_SCANNER_FLASH_MAX_VALUE * dotPr) };
 
 			yellow.a = (byte)((float)yellow.a * 0.9f);
 			float flFadeTime = 1.5f;

@@ -20,13 +20,13 @@
 //  over and over again.
 static CDllDemandLoader g_GameUI("GameUI");
 
-CNewGameDialogue::CNewGameDialogue(vgui::Panel parent) : BaseClass(NULL, "NewGameDialogue_Darkinterval")
+CNewGameDialogue::CNewGameDialogue(vgui::Panel *parent) : BaseClass(NULL, "NewGameDialogue_Darkinterval")
 {
 	SetTitle("#GameUI_NewGame", true);
 
 	SetDeleteSelfOnClose(true);
 
-//	SetParent(&parent);
+//	SetParent(parent);
 	SetBounds(0, 0, 500, 600);
 	SetCloseButtonVisible(false);
 	SetMoveable(true);

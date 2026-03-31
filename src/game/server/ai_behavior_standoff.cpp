@@ -24,8 +24,11 @@
 
 ConVar DrawBattleLines( "ai_drawbattlelines", "0", FCVAR_NONE);
 
-
+#ifdef DARKINTERVAL  // Add missed fPlayerIsBattleline initializer.
+static AI_StandoffParams_t AI_DEFAULT_STANDOFF_PARAMS = { AIHCR_MOVE_ON_COVER, true, true, 1.5, 2.5, 1, 3, 25, 0 };
+#else
 static AI_StandoffParams_t AI_DEFAULT_STANDOFF_PARAMS = { AIHCR_MOVE_ON_COVER, true, 1.5, 2.5, 1, 3, 25, 0 };
+#endif
 
 #define MAKE_ACTMAP_KEY( posture, activity ) ( (((unsigned)(posture)) << 16) | ((unsigned)(activity)) )
 

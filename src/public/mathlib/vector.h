@@ -226,7 +226,7 @@ public:
 	void Init(short ix = 0, short iy = 0, short iz = 0, short iw = 0 );
 
 
-#if USE_M64S
+#if ( ( !defined( _X360 ) ) )
 	__m64 &AsM64() { return *(__m64*)&x; }
 	const __m64 &AsM64() const { return *(const __m64*)&x; } 
 #endif
@@ -283,7 +283,7 @@ public:
 	// Initialization
 	void Init(int ix = 0, int iy = 0, int iz = 0, int iw = 0 );
 
-#if USE_M64S
+#if ( ( !defined( _X360 ) ) )
 	__m64 &AsM64() { return *(__m64*)&x; }
 	const __m64 &AsM64() const { return *(const __m64*)&x; } 
 #endif

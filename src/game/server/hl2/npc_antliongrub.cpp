@@ -44,6 +44,10 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#ifdef DARKINTERVAL
+int	g_interactionAntlionGrubAlert = 0;
+#endif
+
 class CSprite;
 
 ConVar	sk_grubnugget_health_small("sk_grubnugget_health_small", "1");

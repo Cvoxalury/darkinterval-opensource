@@ -1231,7 +1231,7 @@ float CAI_Navigator::GetPathTimeToGoal()
 AI_PathNode_t CAI_Navigator::GetNearestNode()
 {
 #ifdef WIN32
-	COMPILE_TIME_ASSERT( (int)AIN_NO_NODE == NO_NODE );
+	Assert( (int)AIN_NO_NODE == NO_NODE );
 #endif
 	return (AI_PathNode_t)( GetPathfinder()->NearestNodeToNPC() );
 }

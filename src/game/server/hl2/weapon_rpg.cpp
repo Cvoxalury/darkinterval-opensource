@@ -95,6 +95,7 @@ public:
 
 // a list of laser dots to search quickly
 CEntityClassList<CLaserDot> g_LaserDotList;
+template<>
 CLaserDot *CEntityClassList<CLaserDot>::m_pClassList = NULL;
 CLaserDot *GetLaserDotList()
 {
@@ -304,6 +305,7 @@ protected:
 
 // a list of laser dots to search quickly
 CEntityClassList<CLaserDotRPG> g_LaserDotRPGList;
+template<>
 CLaserDotRPG *CEntityClassList<CLaserDotRPG>::m_pClassList = NULL;
 CLaserDotRPG *GetLaserDotRPGList()
 {
@@ -398,6 +400,7 @@ protected:
 
 // a list of laser dots to search quickly
 CEntityClassList<CLaserDotAPCNPC> g_LaserDotAPCNPCList;
+template<>
 CLaserDotAPCNPC *CEntityClassList<CLaserDotAPCNPC>::m_pClassList = NULL;
 CLaserDotAPCNPC *GetLaserDotAPCNPCList()
 {
@@ -492,6 +495,7 @@ protected:
 
 // a list of laser dots to search quickly
 CEntityClassList<CLaserDotAPC> g_LaserDotAPCList;
+template<>
 CLaserDotAPC *CEntityClassList<CLaserDotAPC>::m_pClassList = NULL;
 CLaserDotAPC *GetLaserDotAPCList()
 {
@@ -1320,6 +1324,7 @@ CBaseEntity *CInfoAPCMissileHint::FindAimTarget(CBaseEntity *pMissile, const cha
 //-----------------------------------------------------------------------------
 #ifdef DARKINTERVAL
 CEntityClassList<CAPCMissileNPC> g_APCMissileList;
+template<>
 CAPCMissileNPC *CEntityClassList<CAPCMissileNPC>::m_pClassList = NULL;
 CAPCMissileNPC *GetAPCMissileList()
 #else
@@ -1840,7 +1845,11 @@ void CAPCMissile::ComputeActualDotPosition(CLaserDotAPC *pLaserDot, Vector *pAct
 		m_hSpecificTarget = CInfoAPCMissileHint::FindAimTarget(this, STRING(m_strHint), vecOrigin, vecVelocity);
 	}
 
+#ifdef DARKINTERVAL   // Solve ambiguity in conversion: either EHANDLE to CBaseEntity* or CBaseEntity* to EHANDLE.
+	CBaseEntity *pLaserTarget = m_hSpecificTarget ? (CBaseEntity*)m_hSpecificTarget : pLaserDot->GetTargetEntity();
+#else
 	CBaseEntity *pLaserTarget = m_hSpecificTarget ? m_hSpecificTarget : pLaserDot->GetTargetEntity();
+#endif
 	if (!pLaserTarget)
 	{
 #ifdef DARKINTERVAL
@@ -2286,8 +2295,12 @@ void CAPCMissileNPC::ComputeActualDotPosition(CLaserDotAPCNPC *pLaserDot, Vector
 
 		m_hSpecificTarget = CInfoAPCMissileHint::FindAimTarget(this, STRING(m_strHint), vecOrigin, vecVelocity);
 	}
-
+	
+#ifdef DARKINTERVAL   // Solve ambiguity in conversion: either EHANDLE to CBaseEntity* or CBaseEntity* to EHANDLE.
+	CBaseEntity *pLaserTarget = m_hSpecificTarget ? (CBaseEntity*)m_hSpecificTarget : pLaserDot->GetTargetEntity();
+#else
 	CBaseEntity *pLaserTarget = m_hSpecificTarget ? m_hSpecificTarget : pLaserDot->GetTargetEntity();
+#endif
 	if (!pLaserTarget)
 	{
 		*pHomingSpeed = RPG_HOMING_SPEED;

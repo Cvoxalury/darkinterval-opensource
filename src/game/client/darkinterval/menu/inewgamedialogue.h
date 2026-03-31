@@ -11,7 +11,7 @@ class CNewGameDialogue : public vgui::Frame // It's the base of the menu which h
 {
 	DECLARE_CLASS_SIMPLE(CNewGameDialogue, vgui::Frame);
 
-	CNewGameDialogue(vgui::Panel parent);
+	CNewGameDialogue(vgui::Panel *parent);
 	~CNewGameDialogue() {};
 
 protected:

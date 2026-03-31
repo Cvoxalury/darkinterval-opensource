@@ -1541,7 +1541,11 @@ void CAI_LeadGoal::InputActivate( inputdata_t &inputdata )
 	AI_LeadArgs_t leadArgs = { 
 		GetGoalEntityName(), 
 		STRING(m_iszWaitPointName), 
-		m_spawnflags, 
+#ifdef DARKINTERVAL
+		static_cast<unsigned>(static_cast<int>(m_spawnflags)),
+#else
+		m_spawnflags,
+#endif
 		m_flWaitDistance, 
 		m_flLeadDistance, 
 		m_flRetrieveDistance, 
